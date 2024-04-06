@@ -8,6 +8,10 @@ environment:
 dependencies: 
   cupertino_icons: ^1.0.6
   get: 4.6.6
+  qr_code_scanner: 1.0.1
+  shared_preferences: 2.2.2
+  pdf: 3.10.8
+  printing: 5.12.0
   flutter: 
     sdk: flutter
 
