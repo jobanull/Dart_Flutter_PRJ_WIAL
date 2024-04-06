@@ -1,57 +1,90 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthController extends GetxController {
-  var isLoggedIn = false.obs;
+  var isAuth = false.obs;
 
-  Future<void> loginUser(String email, String password) async {
-    await Future.delayed(Duration(seconds: 2));
-    if (email.isNotEmpty && password.isNotEmpty) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('email', email);
-      await prefs.setString('password', password);
-      isLoggedIn.value = true;
-    } else {
-      isLoggedIn.value = false;
+  late TextEditingController userC;
+  late TextEditingController passC;
+
+  @override
+  void onInit() async {
+    super.onInit();
+    userC = TextEditingController();
+    passC = TextEditingController();
+
+    final prefs = await SharedPreferences.getInstance();
+    final user = prefs.getString("userReg");
+    final pass = prefs.getString("passReg");
+
+    print(user);
+    print(pass);
+
+    final box = GetStorage();
+    if (box.read("datauser") != null) {
+      userC.text = user!;
+      passC.text = pass!;
     }
-  }
-
-  Future<void> registerUser(String email, String password) async {
-    await Future.delayed(Duration(seconds: 2));
-    if (email.isNotEmpty && password.isNotEmpty) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('email', email);
-      await prefs.setString('password', password);
-      isLoggedIn.value = true;
-    } else {
-      isLoggedIn.value = false;
-    }
-  }
-
-  Future<void> logoutUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('email');
-    await prefs.remove('password');
-    isLoggedIn.value = false;
   }
 
   @override
-  void onInit() {
-    super.onInit();
-    _checkLoggedInStatus();
+  void onClose() {
+    super.onClose();
+    userC.dispose();
+    passC.dispose();
   }
 
-  Future<void> _checkLoggedInStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? email = prefs.getString('email');
-    String? password = prefs.getString('password');
-    if (email != null &&
-        password != null &&
-        email.isNotEmpty &&
-        password.isNotEmpty) {
-      isLoggedIn.value = true;
-    } else {
-      isLoggedIn.value = false;
+  void dialogError(String msg) {
+    Get.defaultDialog(title: "Terjadi Kesalahan", middleText: msg);
+  }
+
+  Future<void> autoLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+    isAuth.value = isLoggedIn;
+  }
+
+  void login(String user, String pass) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final isUser = prefs.getString("userReg");
+    final isPass = prefs.getString("passReg");
+
+    if (!GetUtils.isUsername(isUser!)) {
+      dialogError("User Tidak Valid");
+      return;
     }
+
+    if (user.isEmpty || pass.isEmpty) {
+      dialogError("Semua data input haris diisi");
+      return;
+    }
+
+    if (user != isUser || pass != isPass) {
+      dialogError("Data User Tidak Valid, Gunakan akun lainnya");
+      return;
+    }
+
+    // Login Success
+
+    prefs.setBool('isLoggedIn', true);
+    isAuth.value = true;
+  }
+
+  void register(String user, String pass) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString("userReg", user);
+    await prefs.setString("passReg", pass);
+  }
+
+  void logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isLoggedIn', false);
+
+    isAuth.value = false;
   }
 }

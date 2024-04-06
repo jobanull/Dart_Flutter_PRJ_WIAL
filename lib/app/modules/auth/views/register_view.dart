@@ -5,37 +5,46 @@ import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
 
 class RegisterView extends GetView<AuthController> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-
+  final c = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
-    final AuthController authController = Get.put(AuthController());
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: const Text("Register Page"),
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
-              controller: emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              controller: c.userC,
+              autocorrect: false,
+              decoration: const InputDecoration(
+                  labelText: "Username", border: OutlineInputBorder()),
             ),
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: InputDecoration(labelText: 'Password'),
-            ),
+            const SizedBox(height: 15),
+            Obx(() => TextField(
+                  controller: c.passC,
+                  obscureText: c.isAuth.value,
+                  autocorrect: false,
+                  decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        onPressed: () => c.isAuth.toggle(),
+                        icon: c.isAuth.isTrue
+                            ? const Icon(Icons.remove_red_eye)
+                            : const Icon(Icons.remove_red_eye_outlined),
+                      ),
+                      labelText: "Password",
+                      border: const OutlineInputBorder()),
+                )),
+            const SizedBox(height: 15),
             ElevatedButton(
-              onPressed: () {
-                authController.registerUser(
-                  emailController.text,
-                  passwordController.text,
-                );
-              },
-              child: Text('Login'),
+              onPressed: () => c.register(
+                c.userC.text,
+                c.passC.text,
+              ),
+              child: const Text("Login"),
             ),
           ],
         ),

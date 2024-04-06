@@ -42,9 +42,11 @@ class _PurchaseOrderDetailScreenState extends State<PurchaseOrderDetailScreen> {
             constraints: pw.BoxConstraints.expand(),
             child: pw.Column(
               children: [
-                pw.Text('Hello World'),
+                pw.SizedBox(
+                  height: 100,
+                ),
                 pw.BarcodeWidget(
-                    data: widget.purchaseOrder,
+                    data: widget.soId,
                     color: PdfColor.fromHex("#000000"),
                     barcode: pw.Barcode.qrCode(),
                     width: 500,
