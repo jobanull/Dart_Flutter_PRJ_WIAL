@@ -47,8 +47,8 @@ class _PurchaseOrderDetailScreenState extends State<PurchaseOrderDetailScreen> {
                     data: widget.purchaseOrder,
                     color: PdfColor.fromHex("#000000"),
                     barcode: pw.Barcode.qrCode(),
-                    width: 100,
-                    height: 50),
+                    width: 500,
+                    height: 250),
               ],
             ),
           );
